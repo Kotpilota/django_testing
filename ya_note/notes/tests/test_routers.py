@@ -1,5 +1,4 @@
 from http import HTTPStatus
-
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.test import TestCase
@@ -10,6 +9,7 @@ User = get_user_model()
 
 
 class TestRoutes(TestCase):
+    """Тестирование доступности страниц для разных пользователей."""
 
     @classmethod
     def setUpTestData(cls):
@@ -23,6 +23,7 @@ class TestRoutes(TestCase):
         )
 
     def test_pages_availability_for_anonymous_user(self):
+        """Проверка доступности страниц для анонимных пользователей."""
         urls = (
             'notes:home',
             'users:login',
@@ -36,6 +37,7 @@ class TestRoutes(TestCase):
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_pages_availability_for_auth_user(self):
+        """Проверка доступности страниц для авторизованных пользователей."""
         urls = (
             'notes:list',
             'notes:add',
@@ -49,6 +51,7 @@ class TestRoutes(TestCase):
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_pages_availability_for_different_users(self):
+        """Проверка доступности страниц для разных пользователей."""
         users_statuses = (
             (self.author, HTTPStatus.OK),
             (self.not_author, HTTPStatus.NOT_FOUND),
@@ -70,6 +73,7 @@ class TestRoutes(TestCase):
                     self.assertEqual(response.status_code, status)
 
     def test_redirect_for_anonymous_client(self):
+        """Проверка редиректа для анонимных пользователей."""
         login_url = reverse('users:login')
 
         urls = (

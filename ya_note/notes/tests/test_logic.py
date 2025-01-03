@@ -11,6 +11,7 @@ User = get_user_model()
 
 
 class TestNotes(TestCase):
+    """Тестирование создания, редактирования и удаления заметок."""
 
     @classmethod
     def setUpTestData(cls):
@@ -29,6 +30,7 @@ class TestNotes(TestCase):
         }
 
     def test_user_can_create_note(self):
+        """Проверка, что автор может создать заметку."""
         self.client.force_login(self.author)
         url = reverse('notes:add')
         response = self.client.post(url, data=self.form_data)
@@ -40,6 +42,7 @@ class TestNotes(TestCase):
         self.assertEqual(new_note.author, self.author)
 
     def test_anonymous_user_cant_create_note(self):
+        """Проверка, что анонимный пользователь не может создать заметку."""
         url = reverse('notes:add')
         response = self.client.post(url, data=self.form_data)
         login_url = reverse('users:login')
@@ -48,6 +51,7 @@ class TestNotes(TestCase):
         self.assertEqual(Note.objects.count(), 1)
 
     def test_not_unique_slug(self):
+        """Проверка, что нельзя создать заметку с неуникальным slug."""
         self.client.force_login(self.author)
         url = reverse('notes:add')
         self.form_data['slug'] = self.note.slug
@@ -58,6 +62,7 @@ class TestNotes(TestCase):
         self.assertEqual(Note.objects.count(), 1)
 
     def test_empty_slug(self):
+        """Проверка, что если slug пуст, он генерируется автоматически."""
         self.client.force_login(self.author)
         url = reverse('notes:add')
         self.form_data.pop('slug')
@@ -69,6 +74,7 @@ class TestNotes(TestCase):
         self.assertEqual(new_note.slug, expected_slug)
 
     def test_author_can_edit_note(self):
+        """Проверка, что автор может редактировать свою заметку."""
         self.client.force_login(self.author)
         url = reverse('notes:edit', args=(self.note.slug,))
         response = self.client.post(url, self.form_data)
@@ -79,6 +85,7 @@ class TestNotes(TestCase):
         self.assertEqual(self.note.slug, self.form_data['slug'])
 
     def test_other_user_cant_edit_note(self):
+        """Проверка, что другой пользователь не может редактировать заметку."""
         self.client.force_login(self.not_author)
         url = reverse('notes:edit', args=(self.note.slug,))
         response = self.client.post(url, self.form_data)
@@ -89,6 +96,7 @@ class TestNotes(TestCase):
         self.assertEqual(note_from_db.slug, self.note.slug)
 
     def test_author_can_delete_note(self):
+        """Проверка, что автор может удалить свою заметку."""
         self.client.force_login(self.author)
         url = reverse('notes:delete', args=(self.note.slug,))
         response = self.client.post(url)
@@ -96,6 +104,7 @@ class TestNotes(TestCase):
         self.assertEqual(Note.objects.count(), 0)
 
     def test_other_user_cant_delete_note(self):
+        """Проверка, что другой пользователь не может удалить заметку."""
         self.client.force_login(self.not_author)
         url = reverse('notes:delete', args=(self.note.slug,))
         response = self.client.post(url)

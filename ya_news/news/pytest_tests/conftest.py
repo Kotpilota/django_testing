@@ -1,11 +1,8 @@
-from datetime import datetime, timedelta
-
+from datetime import timedelta
 import pytest
-
 from django.test.client import Client
 from django.conf import settings
 from django.utils import timezone
-
 from news.models import News, Comment
 
 
@@ -35,11 +32,10 @@ def not_author_client(not_author):
 
 @pytest.fixture
 def news():
-    news = News.objects.create(
+    return News.objects.create(
         title='Заголовок',
         text='Текст заметки'
     )
-    return news
 
 
 @pytest.fixture
@@ -49,12 +45,11 @@ def news_id_for_args(news):
 
 @pytest.fixture
 def comment(author, news):
-    comment = Comment.objects.create(
+    return Comment.objects.create(
         news=news,
         author=author,
         text='Текст комментария'
     )
-    return comment
 
 
 @pytest.fixture
@@ -64,7 +59,7 @@ def comment_id_for_args(comment):
 
 @pytest.fixture
 def news_list():
-    today = datetime.today()
+    today = timezone.now()
     all_news = [
         News(
             title=f'Новость {index}',
@@ -78,12 +73,15 @@ def news_list():
 @pytest.fixture
 def comments(news, author):
     now = timezone.now()
-    for index in range(10):
-        comment = Comment.objects.create(
-            news=news, author=author, text=f'Текст {index}'
-        )
-        comment.created = now + timedelta(days=index)
-        comment.save()
+    comments = [
+        Comment(
+            news=news,
+            author=author,
+            text=f'Текст {index}',
+            created=now + timedelta(days=index)
+        ) for index in range(10)
+    ]
+    Comment.objects.bulk_create(comments)
 
 
 @pytest.fixture

@@ -9,6 +9,7 @@ User = get_user_model()
 
 
 class TestNotesPage(TestCase):
+    """Тестирование отображения страниц и доступности форм для заметок."""
 
     @classmethod
     def setUpTestData(cls):
@@ -22,6 +23,7 @@ class TestNotesPage(TestCase):
         )
 
     def test_notes_list_for_different_users(self):
+        """Проверка доступности списка заметок для разных пользователей."""
         users_note_in_list = (
             (self.author, True),
             (self.not_author, False),
@@ -34,6 +36,9 @@ class TestNotesPage(TestCase):
                 self.assertEqual((self.note in object_list), note_in_list)
 
     def test_pages_contains_form(self):
+        """Проверка наличия формы на страницах создания
+        и редактирования заметок.
+        """
         urls = (
             ('notes:add', None),
             ('notes:edit', (self.note.slug,)),
