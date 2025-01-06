@@ -37,7 +37,7 @@ class TestNotesPage(TestCase):
                 self.assertEqual((self.note in object_list), note_in_list)
 
     def test_pages_contains_form(self):
-        """Проверка наличия формы на страницах создания и редактирования заметок."""
+        """Проверка наличия формы на страницах создания и редактирования."""
         urls = (
             ('notes:add', None),
             ('notes:edit', (self.note.slug,)),
