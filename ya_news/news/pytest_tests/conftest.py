@@ -1,20 +1,19 @@
 from datetime import timedelta
+
 import pytest
-from django.test.client import Client
 from django.conf import settings
+from django.test.client import Client
 from django.utils import timezone
-from news.models import News, Comment
+from news.models import Comment, News
 
 
 @pytest.fixture
 def author(django_user_model):
     return django_user_model.objects.create(username='Автор')
 
-
 @pytest.fixture
 def not_author(django_user_model):
     return django_user_model.objects.create(username='Не автор')
-
 
 @pytest.fixture
 def author_client(author):
@@ -22,13 +21,11 @@ def author_client(author):
     client.force_login(author)
     return client
 
-
 @pytest.fixture
 def not_author_client(not_author):
     client = Client()
     client.force_login(not_author)
     return client
-
 
 @pytest.fixture
 def news():
@@ -37,11 +34,9 @@ def news():
         text='Текст заметки'
     )
 
-
 @pytest.fixture
 def news_id_for_args(news):
     return (news.id,)
-
 
 @pytest.fixture
 def comment(author, news):
@@ -51,11 +46,9 @@ def comment(author, news):
         text='Текст комментария'
     )
 
-
 @pytest.fixture
 def comment_id_for_args(comment):
     return (comment.id,)
-
 
 @pytest.fixture
 def news_list():
@@ -69,7 +62,6 @@ def news_list():
     ]
     News.objects.bulk_create(all_news)
 
-
 @pytest.fixture
 def comments(news, author):
     now = timezone.now()
@@ -82,7 +74,6 @@ def comments(news, author):
         ) for index in range(10)
     ]
     Comment.objects.bulk_create(comments)
-
 
 @pytest.fixture
 def form_data():

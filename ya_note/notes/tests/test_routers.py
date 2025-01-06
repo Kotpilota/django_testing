@@ -1,8 +1,8 @@
 from http import HTTPStatus
-from django.urls import reverse
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase
-
+from django.urls import reverse
 from notes.models import Note
 
 User = get_user_model()
@@ -13,6 +13,7 @@ class TestRoutes(TestCase):
 
     @classmethod
     def setUpTestData(cls):
+        """Подготовка тестовых данных."""
         cls.author = User.objects.create(username='Автор')
         cls.not_author = User.objects.create(username='Не автор')
         cls.note = Note.objects.create(
@@ -30,6 +31,7 @@ class TestRoutes(TestCase):
             'users:logout',
             'users:signup',
         )
+
         for name in urls:
             with self.subTest(name=name):
                 url = reverse(name)
@@ -44,6 +46,7 @@ class TestRoutes(TestCase):
             'notes:success'
         )
         self.client.force_login(self.author)
+
         for name in urls:
             with self.subTest(name=name):
                 url = reverse(name)
@@ -75,7 +78,6 @@ class TestRoutes(TestCase):
     def test_redirect_for_anonymous_client(self):
         """Проверка редиректа для анонимных пользователей."""
         login_url = reverse('users:login')
-
         urls = (
             ('notes:detail', (self.note.slug,)),
             ('notes:edit', (self.note.slug,)),

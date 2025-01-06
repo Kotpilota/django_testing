@@ -1,11 +1,11 @@
 from http import HTTPStatus
+
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
-from django.contrib.auth import get_user_model
-from pytils.translit import slugify
-
-from notes.models import Note
 from notes.forms import WARNING
+from notes.models import Note
+from pytils.translit import slugify
 
 User = get_user_model()
 
@@ -15,6 +15,7 @@ class TestNotes(TestCase):
 
     @classmethod
     def setUpTestData(cls):
+        """Подготовка тестовых данных."""
         cls.author = User.objects.create(username='Автор')
         cls.not_author = User.objects.create(username='Не автор')
         cls.note = Note.objects.create(
@@ -33,7 +34,9 @@ class TestNotes(TestCase):
         """Проверка, что автор может создать заметку."""
         self.client.force_login(self.author)
         url = reverse('notes:add')
+
         response = self.client.post(url, data=self.form_data)
+
         self.assertRedirects(response, reverse('notes:success'))
         self.assertEqual(Note.objects.count(), 2)
         new_note = Note.objects.get(slug=self.form_data['slug'])
@@ -44,7 +47,9 @@ class TestNotes(TestCase):
     def test_anonymous_user_cant_create_note(self):
         """Проверка, что анонимный пользователь не может создать заметку."""
         url = reverse('notes:add')
+
         response = self.client.post(url, data=self.form_data)
+
         login_url = reverse('users:login')
         expected_url = f'{login_url}?next={url}'
         self.assertRedirects(response, expected_url)
@@ -55,8 +60,10 @@ class TestNotes(TestCase):
         self.client.force_login(self.author)
         url = reverse('notes:add')
         self.form_data['slug'] = self.note.slug
+
         response = self.client.post(url, data=self.form_data)
         form = response.context['form']
+
         self.assertTrue(form.has_error('slug'))
         self.assertEqual(form.errors['slug'][0], self.note.slug + WARNING)
         self.assertEqual(Note.objects.count(), 1)
@@ -66,7 +73,9 @@ class TestNotes(TestCase):
         self.client.force_login(self.author)
         url = reverse('notes:add')
         self.form_data.pop('slug')
+
         response = self.client.post(url, data=self.form_data)
+
         self.assertRedirects(response, reverse('notes:success'))
         self.assertEqual(Note.objects.count(), 2)
         new_note = Note.objects.get(title=self.form_data['title'])
@@ -77,7 +86,9 @@ class TestNotes(TestCase):
         """Проверка, что автор может редактировать свою заметку."""
         self.client.force_login(self.author)
         url = reverse('notes:edit', args=(self.note.slug,))
+
         response = self.client.post(url, self.form_data)
+
         self.assertRedirects(response, reverse('notes:success'))
         self.note.refresh_from_db()
         self.assertEqual(self.note.title, self.form_data['title'])
@@ -88,7 +99,9 @@ class TestNotes(TestCase):
         """Проверка, что другой пользователь не может редактировать заметку."""
         self.client.force_login(self.not_author)
         url = reverse('notes:edit', args=(self.note.slug,))
+
         response = self.client.post(url, self.form_data)
+
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
         note_from_db = Note.objects.get(id=self.note.id)
         self.assertEqual(note_from_db.title, self.note.title)
@@ -99,7 +112,9 @@ class TestNotes(TestCase):
         """Проверка, что автор может удалить свою заметку."""
         self.client.force_login(self.author)
         url = reverse('notes:delete', args=(self.note.slug,))
+
         response = self.client.post(url)
+
         self.assertRedirects(response, reverse('notes:success'))
         self.assertEqual(Note.objects.count(), 0)
 
@@ -107,6 +122,8 @@ class TestNotes(TestCase):
         """Проверка, что другой пользователь не может удалить заметку."""
         self.client.force_login(self.not_author)
         url = reverse('notes:delete', args=(self.note.slug,))
+
         response = self.client.post(url)
+
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
         self.assertEqual(Note.objects.count(), 1)

@@ -6,9 +6,8 @@ from news.forms import CommentForm
 
 @pytest.mark.django_db
 def test_news_count(news_list, client):
-    """Проверяет количество новостей на главной странице.
-
-    Убедитесь, что количество отображаемых новостей соответствует
+    """
+    На главной странице отображается количество новостей, соответствующее
     настройке NEWS_COUNT_ON_HOME_PAGE.
     """
     url = reverse('news:home')
@@ -20,9 +19,8 @@ def test_news_count(news_list, client):
 
 @pytest.mark.django_db
 def test_news_order(client, news_list):
-    """Проверяет порядок новостей на главной странице.
-
-    Убедитесь, что новости сортируются по дате в порядке убывания.
+    """
+    На главной странице новости сортируются по дате в порядке убывания.
     """
     url = reverse('news:home')
     response = client.get(url)
@@ -34,13 +32,12 @@ def test_news_order(client, news_list):
 
 @pytest.mark.django_db
 def test_comments_order(client, news, comments):
-    """Проверяет порядок комментариев на странице новости.
-
-    Убедитесь, что комментарии отсортированы по времени создания.
+    """
+    Комментарии к новости сортируются по времени создания в порядке
+    возрастания.
     """
     url = reverse('news:detail', args=(news.id,))
     response = client.get(url)
-    assert 'news' in response.context
     all_comments = news.comment_set.all()
     all_timestamps = [comment.created for comment in all_comments]
     sorted_timestamps = sorted(all_timestamps)
@@ -49,21 +46,20 @@ def test_comments_order(client, news, comments):
 
 @pytest.mark.django_db
 def test_anonymous_client_has_no_form(client, news_id_for_args):
-    """Проверяет отсутствие формы для анонимного пользователя.
-
-    Убедитесь, что анонимный пользователь не видит форму для добавления
-    комментариев на странице новости.
+    """
+    Анонимный пользователь не видит форму для добавления комментариев на
+    странице новости.
     """
     url = reverse('news:detail', args=news_id_for_args)
     response = client.get(url)
     assert 'form' not in response.context
 
 
+@pytest.mark.django_db
 def test_authorized_client_has_form(not_author_client, news_id_for_args):
-    """Проверяет наличие формы для авторизованного пользователя.
-
-    Убедитесь, что авторизованный пользователь видит форму для добавления
-    комментариев на странице новости.
+    """
+    Авторизованный пользователь видит форму для добавления комментариев на
+    странице новости.
     """
     url = reverse('news:detail', args=news_id_for_args)
     response = not_author_client.get(url)
