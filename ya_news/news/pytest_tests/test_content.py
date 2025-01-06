@@ -19,9 +19,7 @@ def test_news_count(news_list, client):
 
 @pytest.mark.django_db
 def test_news_order(client, news_list):
-    """
-    На главной странице новости сортируются по дате в порядке убывания.
-    """
+    """На главной странице новости сортируются по дате в порядке убывания."""
     url = reverse('news:home')
     response = client.get(url)
     object_list = response.context['object_list']
@@ -37,7 +35,7 @@ def test_comments_order(client, news, comments):
     возрастания.
     """
     url = reverse('news:detail', args=(news.id,))
-    response = client.get(url)
+    client.get(url)
     all_comments = news.comment_set.all()
     all_timestamps = [comment.created for comment in all_comments]
     sorted_timestamps = sorted(all_timestamps)
