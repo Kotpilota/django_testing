@@ -4,7 +4,7 @@ from django.urls import reverse
 
 from notes.forms import NoteForm
 from notes.models import Note
-#На github импорты правильно отображаются, в яндекс практикум по другому.
+# На github импорты правильно отображаются, в яндекс практикум по другому.
 
 User = get_user_model()
 
