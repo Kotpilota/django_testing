@@ -22,7 +22,7 @@ def test_news_count(news_list, client):
 
 @pytest.mark.django_db
 def test_news_order(client, news_list):
-    """Проверяет сортировку новостей на главной странице по дате в убывающем порядке."""
+    """Сортировка новостей по дате в убывающем порядке."""
     # Arrange: Подготовка URL
     url = reverse('news:home')
 
@@ -38,7 +38,7 @@ def test_news_order(client, news_list):
 
 @pytest.mark.django_db
 def test_comments_order(client, news, comments):
-    """Проверяет сортировку комментариев по времени создания в порядке возрастания."""
+    """Сортировка комментариев по времени создания в порядке возрастания."""
     # Arrange: Подготовка URL
     url = reverse('news:detail', args=(news.id,))
 
@@ -54,7 +54,7 @@ def test_comments_order(client, news, comments):
 
 @pytest.mark.django_db
 def test_anonymous_client_has_no_form(client, news_id_for_args):
-    """Проверяет, что анонимный пользователь не видит форму добавления комментариев."""
+    """Анонимный пользователь не видит форму добавления комментариев."""
     # Arrange: Подготовка URL
     url = reverse('news:detail', args=news_id_for_args)
 
@@ -67,7 +67,7 @@ def test_anonymous_client_has_no_form(client, news_id_for_args):
 
 @pytest.mark.django_db
 def test_authorized_client_has_form(not_author_client, news_id_for_args):
-    """Проверяет, что авторизованный пользователь видит форму добавления комментариев."""
+    """Авторизованный пользователь видит форму добавления комментариев."""
     # Arrange: Подготовка URL
     url = reverse('news:detail', args=news_id_for_args)
 

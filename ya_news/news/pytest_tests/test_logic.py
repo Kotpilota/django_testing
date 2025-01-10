@@ -9,7 +9,9 @@ from news.models import Comment
 
 
 @pytest.mark.django_db
-def test_anonymous_user_cant_create_comment(client, form_data, news_id_for_args):
+def test_anonymous_user_cant_create_comment(
+        client, form_data, news_id_for_args
+):
     """Анонимный пользователь не может создать комментарий."""
     # Arrange
     url = reverse('news:detail', args=news_id_for_args)
