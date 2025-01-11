@@ -18,13 +18,10 @@ from pytest_django.asserts import assertRedirects
 )
 def test_pages_availability(client, name, args):
     """Страницы сайта доступны для анонимного пользователя."""
-    # Arrange
     url = reverse(name, args=args)
 
-    # Act
     response = client.get(url)
 
-    # Assert
     assert response.status_code == HTTPStatus.OK
 
 
@@ -43,13 +40,10 @@ def test_availability_for_comment_edit_and_delete(
     parametrized_client, name, expected_status, comment_id_for_args
 ):
     """Доступ к редактированию и удалению комментария."""
-    # Arrange
     url = reverse(name, args=comment_id_for_args)
 
-    # Act
     response = parametrized_client.get(url)
 
-    # Assert
     assert response.status_code == expected_status
 
 
@@ -59,13 +53,10 @@ def test_availability_for_comment_edit_and_delete(
 )
 def test_redirect_for_anonymous_client(client, name, comment_id_for_args):
     """Перенаправление анонимного пользователя при доступе к комментариям."""
-    # Arrange
     login_url = reverse('users:login')
     url = reverse(name, args=comment_id_for_args)
     expected_url = f'{login_url}?next={url}'
 
-    # Act
     response = client.get(url)
 
-    # Assert
     assertRedirects(response, expected_url)
